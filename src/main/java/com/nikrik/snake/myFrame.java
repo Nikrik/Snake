@@ -21,9 +21,8 @@ public class myFrame extends JFrame
         
         Container cont = getContentPane();
         cont.add(pan);
-        
         setTitle("Игра \"Змейка\"");
-        setBounds(500, 200, 800, 650);
+        setBounds(500, 0, 1280, 1200);
         setResizable(false);
         setVisible(true);
         setDefaultCloseOperation(3);

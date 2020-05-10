@@ -16,10 +16,12 @@ public class game
     public int[][] mas;
     public Random rand=new Random();
     long seed;
+    int razm;
     boolean kon;
-    public game()
+    public game(int r)
     {
-        mas=new int[30][30];
+        razm=r;
+        mas=new int[r][r];
         //this.start();
     }
     private void make_new()
@@ -35,8 +37,8 @@ public class game
             {
                 y=rand.nextInt();
             } while (y<0);
-            y=y%30;
-            x=x%30;
+            y=y%razm;
+            x=x%razm;
             if (!(mas[x][y]>0))
             {
                 mas[x][y]=-1;
@@ -67,9 +69,9 @@ public class game
     {
         int max=mas[0][0];
         int x=0,y=0;
-        for (int i = 0; i < 30; i++)
+        for (int i = 0; i < razm; i++)
         {
-            for (int j = 0; j < 30; j++)
+            for (int j = 0; j < razm; j++)
             {
                 if (max<mas[i][j])
                 {
@@ -89,9 +91,9 @@ public class game
         }
         int max=mas[0][0];
         int x=0,y=0;
-        for (int i = 0; i < 30; i++)
+        for (int i = 0; i <razm; i++)
         {
-            for (int j = 0; j < 30; j++)
+            for (int j = 0; j <razm; j++)
             {
                 if (max<mas[i][j])
                 {
@@ -104,30 +106,30 @@ public class game
         
         m=x+m;
         n=y+n;
-        m=m%30;
-        n=n%30;
+        m=m%razm;
+        n=n%razm;
         if (n<0)
         {
-            n=30+n;
+            n=razm+n;
         }
         if (m<0)
         {
-            m=30+m;
+            m=razm+m;
         }
         if (mas[m][n]==mas[x][y]-1)
         {
             m=x+x-m;
             n=y+y-n;
         }
-        m=m%30;
-        n=n%30;
+        m=m%razm;
+        n=n%razm;
         if (n<0)
         {
-            n=30+n;
+            n=razm+n;
         }
         if (m<0)
         {
-            m=30+m;
+            m=razm+m;
         }
         if (mas[m][n]==-1)
         {
@@ -141,9 +143,9 @@ public class game
         }
         else if (mas[m][n]==0||mas[m][n]==1)
         {
-         for (int i = 0; i < 30; i++)
+         for (int i = 0; i < razm; i++)
             {
-                for (int j = 0; j < 30; j++)
+                for (int j = 0; j < razm; j++)
                 {
                     if (mas[i][j]>0)
                     {
@@ -161,19 +163,19 @@ public class game
         kon=false;
         seed=rand.nextLong();
         rand.setSeed(seed);
-        for (int i = 0; i < 30; i++)
+        for (int i = 0; i < razm; i++)
         {
-            for (int j = 0; j < 30; j++)
+            for (int j = 0; j < razm; j++)
             {
                 mas[i][j]=0;
             }
         }
-        mas[15][15]=3;
+        mas[25][25]=4;
         make_new();
         
-//        for (int i = 0; i < 30; i++)
+//        for (int i = 0; i < razm; i++)
 //        {
-//            for (int j = 0; j < 30; j++)
+//            for (int j = 0; j < razm; j++)
 //            {
 //                System.out.print(mas[i][j]+" ");
 //            }
