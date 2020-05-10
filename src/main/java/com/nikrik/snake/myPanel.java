@@ -44,11 +44,13 @@ public class myPanel extends JPanel
         if (isplay)
         {
             tmDraw.stop();
+            System.out.println("Game is stopped");
         }
         else
         {
             setfocus();
             tmDraw.start();
+            System.out.println("Game is resumed");
         }
         isplay=!isplay;
         repaint();
@@ -58,6 +60,7 @@ public class myPanel extends JPanel
         if (!is)
         {
             tmDraw.stop();
+            System.out.println("Game is stopped");
         }
         else
         {
@@ -66,6 +69,7 @@ public class myPanel extends JPanel
                 return;
             }
             setfocus();
+            System.out.println("Game is resumed");
             tmDraw.start();
         }
         isplay=is;
@@ -98,7 +102,7 @@ public class myPanel extends JPanel
     }
     private void setColor()
     {
-        //private Color line,fon,apple,snake,poapple;
+        
         line=converColor(lnColor.getSelectedIndex());
         fon=converColor(bgColor.getSelectedIndex());
         apple=converColor(apColor.getSelectedIndex());
@@ -108,18 +112,23 @@ public class myPanel extends JPanel
     
     private void changeSettings()
     {
+        
         issettings=!issettings;
         if (issettings)
         {
+            System.out.println("Opened settings, stopping game...");
             PlayGame(false);
             bgColor.setVisible(true);
             lnColor.setVisible(true);
             snColor.setVisible(true);
             apColor.setVisible(true);
             papColor.setVisible(true);
+            slider.setVisible(true);
         }
         else
         {
+            System.out.println("closed settings");
+            slider.setVisible(false);
             bgColor.setVisible(false);
             lnColor.setVisible(false);
             snColor.setVisible(false);
@@ -143,20 +152,22 @@ public class myPanel extends JPanel
             int key_ =e.getKeyCode();
             //System.out.println(key_);
             switch (key_)
-            {
-                case(0):
-                    napr=0;
+            {    
                 case(37):
                     napr=1;
+                    System.out.println("left");
                     break;
                 case(38):
                     napr=2;
+                    System.out.println("up");
                     break;
                 case(39):
                     napr=3;
+                    System.out.println("right");
                     break;
                 case(40):
                     napr=4;
+                    System.out.println("down");
                 break;
             }
         }
@@ -178,10 +189,17 @@ public class myPanel extends JPanel
         
         myGame=new game(50);
         myGame.start();
-        tmDraw=new Timer(150, (ActionEvent e) -> {
-            myGame.tick(napr);
-            lb.setText("Счёт: "+myGame.score());
-            repaint();
+        tmDraw=new Timer(16, (ActionEvent e) ->
+        {
+            sloj+=1;
+            if (1000/slider.getValue()<sloj*16)
+            {
+                myGame.tick(napr);
+                lb.setText("Счёт: "+myGame.score());
+                repaint();
+                System.out.println(sloj*16+" ms, "+1000/(sloj*16)+" HZ");
+                sloj=0;
+            }
         });
         tmDraw.start();
         
@@ -239,6 +257,12 @@ public class myPanel extends JPanel
         });
         add(settings);
         
+        slider=new JSlider(1,60);
+        //slider.setInverted(true);
+        slider.setBounds(50,250,800,25);
+        add(slider);
+        slider.setVisible(false);
+        
         String[] items =
         {
             "Чёрный",//0
@@ -250,6 +274,7 @@ public class myPanel extends JPanel
             "Циан",//6
             "Синий",//7
             "Маджента",//8
+            "Прозрачный"
         };
         
         bgColor=new JComboBox(items);
@@ -338,6 +363,11 @@ public class myPanel extends JPanel
                     gr.setColor(apple);
                     gr.fillRect(j*20, i*20,20,20);
                 }
+                else if (myGame.mas[i][j]==-2)
+                {
+                    gr.setColor(poapple);
+                    gr.fillRect(j*20, i*20,20,20);
+                }
             }
         }
         // Отрисовка сетки игрового поля из синих линий
@@ -372,6 +402,7 @@ public class myPanel extends JPanel
             gr.drawString("Настройки", 375+25,450+75);
             gr.setColor(fon);
             gr.fillRect(200,175,575,50);
+            gr.fillRect(350,300,200,50);
             for (int i = 0; i < 5; i++)
             {
                 gr.fillRect(i*200,75,150,25);
@@ -379,12 +410,12 @@ public class myPanel extends JPanel
             gr.setColor(reverseColor(fon));
             gr.setFont(new Font("TimesRoman",0,20));
             gr.drawString("Цвет фона", 0,75+20);
-            gr.drawString("Цвет змейки", 200,75+20);
-            gr.drawString("Цвет линий", 400,75+20);
+            gr.drawString("Цвет линий", 200,75+20);
+            gr.drawString("Цвет змейки", 400,75+20);
             gr.drawString("Цвет яблока", 600,75+20);
             gr.drawString("Цвет яд. яблока", 800,75+20);
             gr.drawString("Изменения вступят в силу только после закрытия настроек",200+10,175+20+10);
-            
+            gr.drawString("Скорость игры",350+10,300+20+10);
         }
     }
 }

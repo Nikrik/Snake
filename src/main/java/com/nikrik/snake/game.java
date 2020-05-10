@@ -24,6 +24,29 @@ public class game
         mas=new int[r][r];
         //this.start();
     }
+    
+    private void make_badapple()
+    {
+        int x,y;
+        do
+        {
+            do
+            {
+                x=rand.nextInt();
+            } while (x<0);
+            do
+            {
+                y=rand.nextInt();
+            } while (y<0);
+            y=y%razm;
+            x=x%razm;
+            if (!(mas[x][y]>0))
+            {
+                mas[x][y]=-2;
+            }
+        } while(!(mas[x][y]==-2));
+    }
+    
     private void make_new()
     {
         int x,y;
@@ -45,6 +68,9 @@ public class game
             }
         } while(!(mas[x][y]==-1));
     }
+    
+    
+    
     public void tick(int napr)
     {   
         switch(napr)
@@ -64,6 +90,7 @@ public class game
         }
         
     }
+    
     
     public int score()
     {
@@ -116,7 +143,7 @@ public class game
         {
             m=razm+m;
         }
-        if (mas[m][n]==mas[x][y]-1)
+        if (mas[m][n]==mas[x][y]-1&&mas[m][n]!=0)
         {
             m=x+x-m;
             n=y+y-n;
@@ -135,6 +162,30 @@ public class game
         {
             mas[m][n]=mas[x][y]+1;
             make_new();
+            System.out.println("Nice apple!!!");
+        }
+        else if (mas[m][n]==-2)
+        {
+            if (max==1)
+            {
+                kon=true;
+            }
+            mas[m][n]=mas[x][y]+1;
+            for (int k = 0; k < 2; k++)
+            {
+                for (int i = 0; i < razm; i++)
+                {
+                    for (int j = 0; j < razm; j++)
+                    {
+                        if (mas[i][j]>0)
+                        {
+                            mas[i][j]=mas[i][j]-1;
+                        }
+                    }
+                }
+            }
+            System.out.println("Bad apple!!!");
+            make_badapple();
         }
         else if (mas[m][n]>1)
         {
@@ -155,7 +206,8 @@ public class game
             }
             mas[m][n]=mas[x][y]+1;   
         }
-        else System.out.println("WTF, такого не должно было произойти");
+        else 
+System.out.println("WTF, такого не должно было произойти");
     }
     
     public void start()
@@ -172,6 +224,7 @@ public class game
         }
         mas[25][25]=4;
         make_new();
+        make_badapple();
         
 //        for (int i = 0; i < razm; i++)
 //        {
