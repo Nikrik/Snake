@@ -9,12 +9,13 @@ import java.awt.Color;
 import java.awt.Font;
 import java.awt.Graphics;
 import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 import javax.swing.JButton;
+import javax.swing.JComboBox;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
+import javax.swing.JSlider;
 import javax.swing.Timer;
 
 /**
@@ -24,14 +25,113 @@ import javax.swing.Timer;
 public class myPanel extends JPanel
 {
     private game myGame;
+    private JComboBox lnColor,bgColor,apColor,snColor,papColor;
+    private JSlider slider;
     private Timer tmDraw;
     private JLabel lb,lb2,seed;
     private myPanel pan;
-    private Color line=new Color(0,0,255),fon=new Color(0,0,0);
+    private Color line,fon,apple,snake,poapple;
     public int sloj;//сложность
     private JButton btn1,btn2,settings,pause;
-    private boolean ispause=true;
-    private int napr=0,buff=0;
+    private boolean isplay=true,issettings=false;
+    private int napr=0;
+    private void PlayGame()
+    {
+        if (issettings)
+        {
+            return;
+        }
+        if (isplay)
+        {
+            tmDraw.stop();
+        }
+        else
+        {
+            setfocus();
+            tmDraw.start();
+        }
+        isplay=!isplay;
+        repaint();
+    }
+    private void PlayGame(boolean is)
+    {
+        if (!is)
+        {
+            tmDraw.stop();
+        }
+        else
+        {
+            if (issettings)
+            {
+                return;
+            }
+            setfocus();
+            tmDraw.start();
+        }
+        isplay=is;
+        repaint();
+    }
+    private Color converColor(int i)
+    {
+        switch(i)
+        {
+            case 0:
+                return Color.BLACK;
+            case 1:
+                return Color.WHITE;
+            case 2:
+                return Color.RED;
+            case 3:
+                return Color.ORANGE;
+            case 4:
+                return Color.YELLOW;
+            case 5:
+                return Color.GREEN;
+            case 6:
+                return Color.CYAN;
+            case 7:
+                return Color.BLUE;
+            case 8:
+                return Color.MAGENTA;
+        };
+        return new Color(0,0,0,0);
+    }
+    private void setColor()
+    {
+        //private Color line,fon,apple,snake,poapple;
+        line=converColor(lnColor.getSelectedIndex());
+        fon=converColor(bgColor.getSelectedIndex());
+        apple=converColor(apColor.getSelectedIndex());
+        snake=converColor(snColor.getSelectedIndex());
+        poapple=converColor(papColor.getSelectedIndex());
+    }
+    
+    private void changeSettings()
+    {
+        issettings=!issettings;
+        if (issettings)
+        {
+            PlayGame(false);
+            bgColor.setVisible(true);
+            lnColor.setVisible(true);
+            snColor.setVisible(true);
+            apColor.setVisible(true);
+            papColor.setVisible(true);
+        }
+        else
+        {
+            bgColor.setVisible(false);
+            lnColor.setVisible(false);
+            snColor.setVisible(false);
+            apColor.setVisible(false);
+            papColor.setVisible(false);
+            setColor();
+            lb.setForeground(reverseColor(fon));
+            lb2.setForeground(reverseColor(fon));
+            seed.setForeground(reverseColor(fon));
+            repaint();
+        }
+    }
     private class myKey implements KeyListener
     {
         @Override
@@ -41,30 +141,22 @@ public class myPanel extends JPanel
         public void keyPressed(KeyEvent e)
         {
             int key_ =e.getKeyCode();
-            System.out.println(key_);
+            //System.out.println(key_);
             switch (key_)
             {
                 case(0):
                     napr=0;
                 case(37):
-                    //x--;
-                    //System.out.println("x--");
                     napr=1;
                     break;
                 case(38):
                     napr=2;
-                    //y--;
-                    //System.out.println("y--");
                     break;
                 case(39):
                     napr=3;
-                    //x++;
-                    //System.out.println("x++");
                     break;
                 case(40):
                     napr=4;
-                    //System.out.println("y++");
-                    //y++;
                 break;
             }
         }
@@ -76,40 +168,38 @@ public class myPanel extends JPanel
     {
         return new Color(255-a.getRed(),255-a.getGreen(),255-a.getBlue());
     }
+    
     public myPanel()
     {
         pan=this;
+        
         addKeyListener(new myKey());
-        this.setFocusable(true);
+        
+        
         myGame=new game(50);
         myGame.start();
-        tmDraw=new Timer(150,new ActionListener()
-        {
-            @Override
-            public void actionPerformed(ActionEvent e)
-            {
-                myGame.tick(napr);
-                lb.setText("Счёт: "+myGame.score());
-                repaint();
-            }
+        tmDraw=new Timer(150, (ActionEvent e) -> {
+            myGame.tick(napr);
+            lb.setText("Счёт: "+myGame.score());
+            repaint();
         });
         tmDraw.start();
         
         setLayout(null);
         
         lb=new JLabel();
-        lb.setForeground(reverseColor(fon));
+        
         lb.setBounds(1100, 350, 150, 50);
         add(lb);
         
         lb2=new JLabel("Seed:");
-        lb2.setForeground(reverseColor(fon));
+        
         lb2.setBounds(1100, 375, 150, 50);
         add(lb2);
         
         seed=new JLabel();
         seed.setText(Long.toString(myGame.seed));
-        seed.setForeground(reverseColor(fon));
+        
         seed.setBounds(1100, 400, 150, 50);
         add(seed);
         
@@ -117,17 +207,15 @@ public class myPanel extends JPanel
         btn1.setText("Новая игра");
         btn1.setForeground(Color.BLUE);
         btn1.setFont(new Font("serif",0,20));
-        btn1.setBounds(1100, 30, 150, 50);
-        btn1.addActionListener(new ActionListener()
-        {
-            public void actionPerformed(ActionEvent arg0)
+        btn1.setBounds(1050, 30, 200, 50);
+        btn1.addActionListener((ActionEvent arg0) -> {
+            myGame.start();
+            napr=0;
+            if (issettings)
             {
-                myGame.start();
-                napr=0;
-                ispause=true;
-                tmDraw.start();
-                setfocus();
+                changeSettings();
             }
+            PlayGame(true);
         });
         add(btn1);
           
@@ -135,23 +223,9 @@ public class myPanel extends JPanel
         pause.setText("Пауза");
         pause.setForeground(Color.BLUE);
         pause.setFont(new Font("serif",0,20));
-        pause.setBounds(1100, 100, 150, 50);
-        pause.addActionListener(new ActionListener()
-        {
-            public void actionPerformed(ActionEvent arg0)
-            {
-                if (ispause)
-                {
-                    tmDraw.stop();
-                }
-                else
-                {
-                    setfocus();
-                    tmDraw.start();
-                }
-                ispause=!ispause;
-                repaint();
-            }
+        pause.setBounds(1050, 100, 200, 50);
+        pause.addActionListener((ActionEvent arg0) -> {
+            PlayGame();
         });
         add(pause);
         
@@ -159,44 +233,94 @@ public class myPanel extends JPanel
         settings.setText("Настройки");
         settings.setForeground(Color.BLUE);
         settings.setFont(new Font("serif",0,20));
-        settings.setBounds(1100, 170, 150, 50);
-        settings.addActionListener(new ActionListener()
-        {
-            public void actionPerformed(ActionEvent arg0)
-            {
-                //System.exit(0);
-            }
+        settings.setBounds(1050, 170, 200, 50);
+        settings.addActionListener((ActionEvent arg0) -> {
+            changeSettings();
         });
         add(settings);
         
-                
+        String[] items =
+        {
+            "Чёрный",//0
+            "Белый",//1
+            "Красный",//2
+            "Оранжевый",//3
+            "Жёлтый",//4
+            "Зелёный",//5
+            "Циан",//6
+            "Синий",//7
+            "Маджента",//8
+        };
+        
+        bgColor=new JComboBox(items);
+        bgColor.setBounds(0, 100, 150, 25);
+        bgColor.setSelectedIndex(0);
+        add(bgColor);
+        bgColor.setVisible(false);
+        
+        lnColor=new JComboBox(items);
+        lnColor.setBounds(200, 100, 150, 25);
+        lnColor.setSelectedIndex(5);
+        add(lnColor);
+        lnColor.setVisible(false);
+        
+        snColor=new JComboBox(items);
+        snColor.setBounds(400, 100, 150, 25);
+        snColor.setSelectedIndex(7);
+        add(snColor);
+        snColor.setVisible(false);
+        
+        apColor=new JComboBox(items);
+        apColor.setBounds(600,100,150,25);
+        apColor.setSelectedIndex(2);
+        add(apColor);
+        apColor.setVisible(false);
+        
+        papColor=new JComboBox(items);
+        papColor.setBounds(800,100,150,25);
+        papColor.setSelectedIndex(5);
+        add(papColor);
+        papColor.setVisible(false);
+        setColor();
+        lb.setForeground(reverseColor(fon));
+        lb2.setForeground(reverseColor(fon));
+        seed.setForeground(reverseColor(fon));
+        //private JSlider slider;
+        
         btn2 = new JButton();
         btn2.setText("Выход");
         btn2.setForeground(Color.RED);
         btn2.setFont(new Font("serif",0,20));
-        btn2.setBounds(1100, 240, 150, 50);
-        btn2.addActionListener(new ActionListener()
-        {
-            public void actionPerformed(ActionEvent arg0)
-            {
-                System.exit(0);
-            }
+        btn2.setBounds(1050, 240, 200, 50);
+        btn2.addActionListener((ActionEvent arg0) -> {
+            System.exit(0);
         });
         add(btn2);
+        setfocus();
     }
     private void setfocus()
     {
+        pan.setFocusable(true);
+        
         btn1.setFocusable(false);
-                    btn2.setFocusable(false);
-                    pause.setFocusable(false);
-                    settings.setFocusable(false);
-                    pan.setFocusable(true);
+        btn2.setFocusable(false);
+        pause.setFocusable(false);
+        settings.setFocusable(false);
+        
+        bgColor.setFocusable(false);
+        lnColor.setFocusable(false);
+        snColor.setFocusable(false);
+        apColor.setFocusable(false);
+        papColor.setFocusable(false);
+        
+        //slider.setFocusable(false);
     }
     @Override
     public void paintComponent(Graphics gr)
     {
         //super.paintComponent(gr);
         // Отрисовка фона
+        
         gr.setColor(fon);
         gr.fillRect(0,0,1280, 1000);
         // Отрисовка игрового поля на основании массива
@@ -206,12 +330,12 @@ public class myPanel extends JPanel
             {
                 if (myGame.mas[i][j]>0)
                 {
-                    gr.setColor(Color.red);
+                    gr.setColor(snake);
                     gr.fillRect(j*20, i*20,20,20);
                 }
                 else if (myGame.mas[i][j]==-1)
                 {
-                    gr.setColor(Color.green);
+                    gr.setColor(apple);
                     gr.fillRect(j*20, i*20,20,20);
                 }
             }
@@ -223,21 +347,44 @@ public class myPanel extends JPanel
             gr.drawLine(i*20, 0, i*20, myGame.razm*20);
             gr.drawLine(0, i*20, myGame.razm*20, i*20);
         }
-        if (!ispause)
+        if (!isplay)
         {
             gr.setColor(fon);
-            gr.fillRect(250,200,300,100);
+            gr.fillRect(375,450,300,100);
             gr.setColor(reverseColor(fon));
             gr.setFont(new Font("TimesRoman", Font.PLAIN, 50));
-            gr.drawString("Пауза", 270, 275);
+            gr.drawString("Пауза", 375+25,450+75);
         }
         if (myGame.kon)
         {
             gr.setColor(fon);
-            gr.fillRect(250,200,300,100);
+            gr.fillRect(375,450,300,100);
             gr.setColor(reverseColor(fon));
             gr.setFont(new Font("TimesRoman", Font.PLAIN, 50));
-            gr.drawString("Конец игры", 270, 275);
+            gr.drawString("Конец игры", 375+25,450+75);
+        }
+        if (issettings)
+        {
+            gr.setColor(fon);
+            gr.fillRect(375,450,300,100);
+            gr.setColor(reverseColor(fon));
+            gr.setFont(new Font("TimesRoman", Font.PLAIN, 50));
+            gr.drawString("Настройки", 375+25,450+75);
+            gr.setColor(fon);
+            gr.fillRect(200,175,575,50);
+            for (int i = 0; i < 5; i++)
+            {
+                gr.fillRect(i*200,75,150,25);
+            }
+            gr.setColor(reverseColor(fon));
+            gr.setFont(new Font("TimesRoman",0,20));
+            gr.drawString("Цвет фона", 0,75+20);
+            gr.drawString("Цвет змейки", 200,75+20);
+            gr.drawString("Цвет линий", 400,75+20);
+            gr.drawString("Цвет яблока", 600,75+20);
+            gr.drawString("Цвет яд. яблока", 800,75+20);
+            gr.drawString("Изменения вступят в силу только после закрытия настроек",200+10,175+20+10);
+            
         }
     }
 }
