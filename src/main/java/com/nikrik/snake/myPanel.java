@@ -28,7 +28,7 @@ public class myPanel extends JPanel
     private JComboBox lnColor,bgColor,apColor,snColor,papColor;
     private JSlider slider;
     private Timer tmDraw;
-    private JLabel lb,lb2,seed;
+    private JLabel lb,lb2,seed,uprav;
     private myPanel pan;
     private Color line,fon,apple,snake,poapple;
     public int sloj;//сложность
@@ -138,6 +138,7 @@ public class myPanel extends JPanel
             lb.setForeground(reverseColor(fon));
             lb2.setForeground(reverseColor(fon));
             seed.setForeground(reverseColor(fon));
+            uprav.setForeground(reverseColor(fon));
             repaint();
         }
     }
@@ -201,7 +202,7 @@ public class myPanel extends JPanel
                 sloj=0;
             }
         });
-        tmDraw.start();
+        
         
         setLayout(null);
         
@@ -217,9 +218,13 @@ public class myPanel extends JPanel
         
         seed=new JLabel();
         seed.setText(Long.toString(myGame.seed));
-        
         seed.setBounds(1100, 400, 150, 50);
         add(seed);
+        
+        uprav=new JLabel();
+        uprav.setText("<html>Что бы управлять змейкой, нажимайте на стрелки</html>");
+        uprav.setBounds(1100, 450, 150, 50);;
+        add(uprav);
         
         btn1=new JButton();
         btn1.setText("Новая игра");
@@ -257,8 +262,8 @@ public class myPanel extends JPanel
         });
         add(settings);
         
-        slider=new JSlider(1,60);
-        //slider.setInverted(true);
+        slider=new JSlider(1,60,15);
+        tmDraw.start();
         slider.setBounds(50,250,800,25);
         add(slider);
         slider.setVisible(false);
@@ -307,10 +312,11 @@ public class myPanel extends JPanel
         add(papColor);
         papColor.setVisible(false);
         setColor();
+        
         lb.setForeground(reverseColor(fon));
         lb2.setForeground(reverseColor(fon));
         seed.setForeground(reverseColor(fon));
-        //private JSlider slider;
+        uprav.setForeground(reverseColor(fon));
         
         btn2 = new JButton();
         btn2.setText("Выход");
